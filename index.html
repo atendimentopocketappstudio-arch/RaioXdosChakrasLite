@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Raio-X dos Chakras Lite</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#0a1120">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pranion">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eef2fb; --surface:#ffffff; --surface-2:#f3f6fd; --surface-3:#e7ecf9;
+    --border:#d7e0f2; --text:#121a2c; --text-dim:#5b6785; --text-faint:#8791ab;
+    --accent:#2f5fe0; --accent-2:#0f9bab; --accent-ink:#ffffff; --accent-soft:#e2eaff;
+    --hyper:#c96a1e; --hyper-soft:#fbe6d3; --hyper-ink:#5c3512;
+    --hypo:#5a63c9; --hypo-soft:#e4e5fb; --hypo-ink:#33306f;
+    --balanced:#0f8f68; --balanced-soft:#d9f3e8; --balanced-ink:#0b4a37;
+    --shadow: 0 18px 40px -20px rgba(30,45,90,.28);
+    --shadow-sm: 0 6px 16px -8px rgba(30,45,90,.22);
+    --radius-sm:10px; --radius-md:16px; --radius-lg:24px;
+    --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:28px; --sp-7:36px; --sp-8:48px;
+    --font-display:"Fraunces", Georgia, serif;
+    --font-body:"Manrope", -apple-system, "Segoe UI", sans-serif;
+    --shell-max: 460px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0a1120; --surface:#121b30; --surface-2:#17223d; --surface-3:#1d2a4a;
+      --border:#26325a; --text:#eaf0fc; --text-dim:#9fabc9; --text-faint:#6f7ba0;
+      --accent:#5a89ff; --accent-2:#3fd1c4; --accent-ink:#0a1120; --accent-soft:#1c2c56;
+      --hyper:#f0a15a; --hyper-soft:#3a2a17; --hyper-ink:#f6d3ac;
+      --hypo:#93a0f7; --hypo-soft:#232a5c; --hypo-ink:#c7cdfb;
+      --balanced:#49dba6; --balanced-soft:#123528; --balanced-ink:#a9f2d6;
+      --shadow: 0 18px 44px -18px rgba(0,0,0,.55);
+      --shadow-sm: 0 8px 20px -10px rgba(0,0,0,.5);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0a1120; --surface:#121b30; --surface-2:#17223d; --surface-3:#1d2a4a;
+    --border:#26325a; --text:#eaf0fc; --text-dim:#9fabc9; --text-faint:#6f7ba0;
+    --accent:#5a89ff; --accent-2:#3fd1c4; --accent-ink:#0a1120; --accent-soft:#1c2c56;
+    --hyper:#f0a15a; --hyper-soft:#3a2a17; --hyper-ink:#f6d3ac;
+    --hypo:#93a0f7; --hypo-soft:#232a5c; --hypo-ink:#c7cdfb;
+    --balanced:#49dba6; --balanced-soft:#123528; --balanced-ink:#a9f2d6;
+    --shadow: 0 18px 44px -18px rgba(0,0,0,.55);
+    --shadow-sm: 0 8px 20px -10px rgba(0,0,0,.5);
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    background:var(--bg); color:var(--text); font-family:var(--font-body);
+    display:flex; justify-content:center;
+  }
+  #app{
+    width:100%; max-width:var(--shell-max); min-height:100%;
+    background:var(--surface); position:relative;
+    display:flex; flex-direction:column;
+    box-shadow: var(--shadow);
+  }
+  @media (min-width:520px){
+    body{ padding-block:var(--sp-6) var(--sp-6); }
+    #app{ min-height:min(880px,calc(100vh - 56px)); border-radius:var(--radius-lg); overflow-y:auto; overflow-x:hidden; }
+  }
+  h1,h2,h3,.display{ font-family:var(--font-display); font-weight:600; text-wrap:balance; letter-spacing:-.01em; }
+  p{ line-height:1.55; }
+  .num{ font-variant-numeric:tabular-nums; }
+  button{ font-family:inherit; }
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
+
+  /* ---- top bar ---- */
+  .topbar{
+    position:sticky; top:env(safe-area-inset-top,0px); z-index:5;
+    display:flex; align-items:center; gap:var(--sp-3);
+    padding: var(--sp-4) var(--sp-4) var(--sp-3);
+    background:var(--surface); border-bottom:1px solid var(--border);
+  }
+  .topbar img.mark{ width:30px; height:30px; object-fit:contain; flex:none; }
+  .topbar .brand{ display:flex; flex-direction:column; line-height:1.1; }
+  .topbar .brand b{ font-family:var(--font-display); font-size:16px; font-weight:650; }
+  .topbar .brand span{ font-size:11px; color:var(--text-dim); letter-spacing:.02em; }
+  .topbar .spacer{ flex:1; }
+  .iconbtn{
+    width:36px; height:36px; border-radius:50%; border:1px solid var(--border);
+    background:var(--surface-2); color:var(--text); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; flex:none;
+  }
+  .iconbtn:active{ transform:scale(.94); }
+
+  /* ---- generic layout ---- */
+  main{ flex:1; padding: var(--sp-4) var(--sp-4) calc(var(--sp-8) + 70px); display:flex; flex-direction:column; gap:var(--sp-5); }
+  .view{ display:flex; flex-direction:column; gap:var(--sp-5); }
+  .eyebrow{
+    align-self:flex-start; display:inline-flex; align-items:center; gap:6px;
+    background:var(--accent-soft); color:var(--accent); font-weight:700; font-size:11.5px;
+    letter-spacing:.04em; text-transform:uppercase; padding:6px 12px; border-radius:999px;
+  }
+  .h1{ font-size:clamp(24px,6vw,30px); line-height:1.18; margin:0; }
+  .lede{ color:var(--text-dim); font-size:15px; margin:0; }
+  .card{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-md);
+    padding: var(--sp-5);
+  }
+  .card.soft{ background:var(--surface); }
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    border-radius:999px; border:1px solid transparent; padding:14px 22px; font-weight:700; font-size:15px;
+    cursor:pointer; width:100%; transition:transform .08s ease;
+  }
+  .btn:active{ transform:scale(.98); }
+  .btn-primary{ background:var(--accent); color:var(--accent-ink); }
+  .btn-ghost{ background:var(--surface-2); color:var(--text); border-color:var(--border); }
+  .btn-line{ background:transparent; color:var(--accent); border-color:var(--accent); }
+
+  /* ---- chakra chip grid (home) ---- */
+  .chip-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:var(--sp-3); }
+  .chip{
+    display:flex; align-items:center; gap:10px; background:var(--surface-2); border:1px solid var(--border);
+    border-radius:var(--radius-sm); padding:10px 12px;
+  }
+  .chip .dot{ width:30px; height:30px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center; }
+  .chip .dot svg{ width:16px; height:16px; }
+  .chip b{ display:block; font-size:12.5px; line-height:1.25; }
+  .chip small{ display:block; font-size:10.5px; color:var(--text-dim); }
+
+  /* ---- practices card ---- */
+  .practices{ display:grid; grid-template-columns:repeat(2,1fr); gap:var(--sp-3); }
+  .practice{ display:flex; flex-direction:column; gap:4px; }
+  .practice .picon{ width:26px; height:26px; }
+  .practice b{ font-size:12.5px; }
+  .practice span{ font-size:11.5px; color:var(--text-dim); }
+
+  /* ---- body map ---- */
+  .bodywrap{ display:flex; justify-content:center; padding: var(--sp-2) 0; }
+  .bodymap-pt{ cursor:pointer; }
+  .bodymap-pt circle.ring{ fill:none; stroke-width:2; }
+
+  /* ---- progress ---- */
+  .progressline{ height:6px; border-radius:999px; background:var(--surface-3); overflow:hidden; }
+  .progressline > i{ display:block; height:100%; background:var(--accent); border-radius:999px; transition:width .3s ease; }
+  .steplabel{ display:flex; justify-content:space-between; font-size:12px; color:var(--text-dim); font-weight:700; }
+
+  /* ---- quiz list ---- */
+  .qlist{ display:flex; flex-direction:column; gap:8px; }
+  .qitem{
+    display:flex; align-items:flex-start; gap:12px; background:var(--surface-2); border:1px solid var(--border);
+    border-radius:var(--radius-sm); padding:13px 14px; cursor:pointer; user-select:none;
+  }
+  .qitem .box{
+    width:21px; height:21px; border-radius:7px; border:2px solid var(--text-faint); flex:none; margin-top:1px;
+    display:flex; align-items:center; justify-content:center; background:var(--surface);
+  }
+  .qitem.checked .box{ background:var(--accent); border-color:var(--accent); }
+  .qitem .box svg{ width:13px; height:13px; opacity:0; }
+  .qitem.checked .box svg{ opacity:1; }
+  .qitem span{ font-size:14.5px; line-height:1.4; padding-top:1px; }
+
+  /* ---- status pill ---- */
+  .pill{ display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:999px; font-size:11.5px; font-weight:800; white-space:nowrap; }
+  .pill.hiper{ background:var(--hyper-soft); color:var(--hyper-ink); }
+  .pill.hipo{ background:var(--hypo-soft); color:var(--hypo-ink); }
+  .pill.bal{ background:var(--balanced-soft); color:var(--balanced-ink); }
+
+  /* ---- results ---- */
+  .harmony-big{ text-align:center; padding: var(--sp-3) 0 var(--sp-1); }
+  .harmony-big .n{ font-family:var(--font-display); font-size:52px; font-weight:650; }
+  .harmony-big .lbl{ color:var(--text-dim); font-size:12.5px; text-transform:uppercase; letter-spacing:.05em; font-weight:700; }
+  .flagrow{ display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-3); }
+  .flag{ background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px; }
+  .flag b{ display:block; font-size:13.5px; }
+  .flag span{ font-size:11.5px; color:var(--text-dim); }
+
+  .clist{ display:flex; flex-direction:column; gap:8px; }
+  .crow{
+    display:flex; align-items:center; gap:12px; background:var(--surface-2); border:1px solid var(--border);
+    border-radius:var(--radius-sm); padding:12px 14px; cursor:pointer;
+  }
+  .crow:active{ transform:scale(.99); }
+  .crow .dot{ width:36px; height:36px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center; }
+  .crow .dot svg{ width:18px; height:18px; }
+  .crow .meta{ flex:1; min-width:0; }
+  .crow b{ font-size:14px; display:block; }
+  .crow small{ font-size:11.5px; color:var(--text-dim); }
+  .crow .chev{ color:var(--text-faint); flex:none; }
+  .bar-mini{ height:4px; border-radius:999px; background:var(--surface-3); margin-top:6px; overflow:hidden; }
+  .bar-mini > i{ display:block; height:100%; border-radius:999px; }
+
+  /* ---- detail ---- */
+  .detail-head{ display:flex; align-items:center; gap:14px; }
+  .detail-head .dot{ width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex:none; }
+  .detail-head .dot svg{ width:26px; height:26px; }
+  .detail-head h2{ font-size:21px; margin:0 0 2px; }
+  .detail-head .sk{ font-size:12px; color:var(--text-dim); }
+
+  .notecard{ display:flex; gap:12px; background:var(--accent-soft); border-radius:var(--radius-md); padding:var(--sp-4); }
+  .notecard svg{ width:20px; height:20px; color:var(--accent); flex:none; margin-top:1px; }
+  .notecard p{ margin:0; font-size:13px; color:var(--text); }
+  .notecard b{ color:var(--accent); }
+
+  /* ---- history ---- */
+  .histrow{ display:flex; justify-content:space-between; align-items:center; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px 14px; }
+  .histrow b{ font-size:13.5px; display:block; }
+  .histrow span{ font-size:11.5px; color:var(--text-dim); }
+  .histrow .pct{ font-family:var(--font-display); font-size:19px; font-weight:650; }
+  .empty{ text-align:center; padding:var(--sp-7) var(--sp-4); color:var(--text-dim); }
+  .empty svg{ width:40px; height:40px; opacity:.4; margin-bottom:10px; }
+
+  /* ---- bottom tab bar ---- */
+  .tabbar{
+    position:sticky; bottom:0; z-index:5; display:flex;
+    padding: var(--sp-2) var(--sp-2) calc(var(--sp-2) + env(safe-area-inset-bottom,0px));
+    background:var(--surface); border-top:1px solid var(--border);
+  }
+  .tabbtn{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none;
+    color:var(--text-faint); font-size:10.5px; font-weight:700; letter-spacing:.01em; padding:8px 2px 6px; cursor:pointer; border-radius:14px;
+    position:relative;
+  }
+  .tabbtn svg{ width:21px; height:21px; }
+  .tabbtn:active{ background:var(--surface-2); }
+  .tabbtn.active{ color:var(--accent); }
+  .tabbtn.active::before{
+    content:""; position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:18px; height:3px; border-radius:0 0 4px 4px; background:var(--accent);
+  }
+
+  /* ---- install banner / modal ---- */
+  .installbar{
+    display:flex; align-items:center; gap:10px; background:var(--accent); color:var(--accent-ink);
+    border-radius:var(--radius-sm); padding:12px 14px;
+  }
+  .installbar svg{ width:20px; height:20px; flex:none; }
+  .installbar p{ margin:0; font-size:12.5px; flex:1; font-weight:600; }
+  .installbar button{ background:var(--accent-ink); color:var(--accent); border:none; border-radius:999px; padding:8px 14px; font-size:12px; font-weight:800; cursor:pointer; flex:none; }
+  .installbar .x{ background:none; color:var(--accent-ink); opacity:.8; padding:4px; font-size:16px; }
+
+  .modal-back{ position:fixed; inset:0; background:rgba(10,14,26,.55); display:flex; align-items:flex-end; justify-content:center; z-index:50; }
+  @media (min-width:520px){ .modal-back{ align-items:center; } }
+  .modal{
+    background:var(--surface); width:100%; max-width:var(--shell-max); border-radius:20px 20px 0 0;
+    padding: var(--sp-6) var(--sp-5) calc(var(--sp-6) + env(safe-area-inset-bottom,0px));
+    display:flex; flex-direction:column; gap:var(--sp-4);
+  }
+  @media (min-width:520px){ .modal{ border-radius:20px; } }
+  .modal h3{ margin:0; font-size:19px; }
+  .modal .step{ display:flex; gap:12px; align-items:flex-start; font-size:13.5px; color:var(--text-dim); }
+  .modal .step b{ color:var(--text); }
+  .modal .step svg{ width:22px; height:22px; flex:none; color:var(--accent); }
+
+  footer.credit{ display:flex; align-items:center; justify-content:center; gap:8px; padding-top:var(--sp-2); }
+  footer.credit span{ font-size:10.5px; color:var(--text-faint); }
+  footer.credit img{ height:14px; width:auto; opacity:.82; }
+
+  [hidden]{ display:none !important; }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="topbar">
+    <img class="mark" src="assets/pranion-mark.webp" alt="">
+    <div class="brand"><b>Pranion</b><span>Raio-X dos Chakras Lite</span></div>
+    <div class="spacer"></div>
+    <button class="iconbtn" id="btnRestartTop" title="Reiniciar avaliação" aria-label="Reiniciar avaliação">
+      <svg viewBox="0 0 24 24" fill="none" width="17" height="17"><path d="M4 12a8 8 0 1 1 2.5 5.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M4 21v-5h5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <main id="main">
+    <!-- views injected by JS -->
+  </main>
+
+  <div class="tabbar" id="tabbar">
+    <button class="tabbtn" data-tab="home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 11.5 12 4l9 7.5" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"/></svg>
+      Início
+    </button>
+    <button class="tabbtn" data-tab="assessment">
+      <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="4" width="14" height="17" rx="2.5" stroke="currentColor" stroke-width="2.1"/><path d="M9 3.6h6v2.2H9z" fill="currentColor"/><path d="M8 11.5h8M8 15h5" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg>
+      Avaliação
+    </button>
+    <button class="tabbtn" data-tab="results">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2.1"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2.1"/><circle cx="12" cy="12" r="1.1" fill="currentColor"/></svg>
+      Resultado
+    </button>
+    <button class="tabbtn" data-tab="history">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 1 0 3-6.7" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><path d="M3 4v5h5" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg>
+      Histórico
+    </button>
+  </div>
+</div>
+
+<div id="modalRoot"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================= DATA ============================= */
+
+const ICONS = {
+  basico: '<path d="M12 3 4 20h16L12 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/>',
+  sacro: '<path d="M12 3c4 5 6 8 6 11a6 6 0 1 1-12 0c0-3 2-6 6-11Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/>',
+  plexo: '<circle cx="12" cy="12" r="4.4" stroke="currentColor" stroke-width="2" fill="none"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v3"/><path d="M12 19v3"/><path d="M2 12h3"/><path d="M19 12h3"/><path d="M4.9 4.9l2.1 2.1"/><path d="M17 17l2.1 2.1"/><path d="M19.1 4.9 17 7"/><path d="M7 17l-2.1 2.1"/></g>',
+  cardiaco: '<path d="M12 20.5S3.5 15 3.5 9a4.5 4.5 0 0 1 8.5-2 4.5 4.5 0 0 1 8.5 2c0 6-8.5 11.5-8.5 11.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/>',
+  laringeo: '<g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h2"/><path d="M7 8v8"/><path d="M11 5v14"/><path d="M15 8v8"/><path d="M19 10v4"/><path d="M22 12h-1"/></g>',
+  frontal: '<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="2" fill="none"/>',
+  coronario: '<path d="m12 2 2.2 5.6L20 9l-4.6 3.8L16.8 19 12 15.6 7.2 19l1.4-6.2L4 9l5.8-1.4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" fill="none"/>'
+};
+
+const CHECK_ICON = '<svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5 6.2 12 13 4" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const CHEV_ICON = '<svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+const CHAKRAS = [
+  {
+    key:'basico', name:'Chakra Básico', sanskrit:'Muladhara · Base da Coluna',
+    theme:'segurança, estabilidade e prosperidade material', color:'#33459E', icon:ICONS.basico,
+    hyper:[
+      'Apego excessivo a bens materiais e dinheiro',
+      'Rigidez extrema e forte resistência a mudanças',
+      'Reatividade ou agressividade diante de imprevistos',
+      'Compulsão por acúmulo — comida, objetos ou compras'
+    ],
+    hypo:[
+      'Sensação constante de insegurança ou medo do futuro',
+      'Cansaço físico e falta de energia ao acordar',
+      'Dificuldade em se sentir presente no próprio corpo',
+      'Preocupação recorrente com dinheiro ou moradia'
+    ],
+    aligned:[
+      'Me sinto seguro(a) e estável mesmo diante de imprevistos',
+      'Tenho uma relação tranquila com dinheiro e recursos materiais',
+      'Sinto meu corpo com energia e disposição no dia a dia'
+    ]
+  },
+  {
+    key:'sacro', name:'Chakra Sacro', sanskrit:'Svadhisthana · Baixo Ventre',
+    theme:'criatividade, prazer e relacionamentos', color:'#2E56C4', icon:ICONS.sacro,
+    hyper:[
+      'Busca excessiva por prazer imediato — comida, compras, telas',
+      'Ciúmes ou dependência emocional nos relacionamentos',
+      'Dificuldade em dizer não a estímulos e desejos',
+      'Envolvimento emocional excessivo nos problemas alheios'
+    ],
+    hypo:[
+      'Falta de criatividade ou inspiração no dia a dia',
+      'Dificuldade em sentir prazer nas coisas simples',
+      'Culpa relacionada ao próprio corpo ou à sexualidade',
+      'Evita se aproximar emocionalmente das pessoas'
+    ],
+    aligned:[
+      'Sinto prazer e leveza nas atividades do dia a dia',
+      'Minha criatividade flui com naturalidade',
+      'Tenho relacionamentos afetivos saudáveis e equilibrados'
+    ]
+  },
+  {
+    key:'plexoSolar', name:'Chakra Plexo Solar', sanskrit:'Manipura · Alto Abdômen',
+    theme:'poder pessoal, autoestima e vida profissional', color:'#2C6FD1', icon:ICONS.plexo,
+    hyper:[
+      'Necessidade excessiva de controle sobre tudo e todos',
+      'Raiva ou irritabilidade fácil no trabalho ou em casa',
+      'Competitividade exagerada, dificuldade em perder',
+      'Autocrítica ou crítica aos outros com frequência'
+    ],
+    hypo:[
+      'Falta de confiança para tomar decisões',
+      'Sensação de estagnação ou desmotivação profissional',
+      'Dificuldade em impor limites e dizer não',
+      'Baixa autoestima quanto às próprias capacidades'
+    ],
+    aligned:[
+      'Confio nas minhas decisões e na minha capacidade',
+      'Sinto-me motivado(a) e realizado(a) no que faço',
+      'Consigo impor limites com respeito e clareza'
+    ]
+  },
+  {
+    key:'cardiaco', name:'Chakra Cardíaco', sanskrit:'Anahata · Centro do Peito',
+    theme:'amor, empatia e harmonia emocional', color:'#1E9FCB', icon:ICONS.cardiaco,
+    hyper:[
+      'Dificuldade em dizer não por medo de desagradar',
+      'Ciúme possessivo ou dependência emocional no amor',
+      'Se doa demais e esquece de cuidar de si mesmo(a)',
+      'Dificuldade em manter limites emocionais saudáveis'
+    ],
+    hypo:[
+      'Dificuldade em confiar e se abrir emocionalmente',
+      'Mágoas antigas que ainda pesam',
+      'Sensação de solidão mesmo cercado(a) de pessoas',
+      'Dificuldade em perdoar — a si mesmo(a) ou aos outros'
+    ],
+    aligned:[
+      'Amo e me permito ser amado(a) com naturalidade',
+      'Sinto empatia e conexão verdadeira com as pessoas',
+      'Consigo perdoar e seguir em frente com leveza'
+    ]
+  },
+  {
+    key:'laringeo', name:'Chakra Laríngeo', sanskrit:'Vishuddha · Garganta',
+    theme:'comunicação, expressão e verdade', color:'#0E9FB9', icon:ICONS.laringeo,
+    hyper:[
+      'Fala em excesso e dificuldade em ouvir os outros',
+      'Sinceridade sem filtro que acaba magoando',
+      'Necessidade de sempre ter a última palavra',
+      'Crítica ou fofoca com frequência'
+    ],
+    hypo:[
+      'Dificuldade em expressar o que sente ou pensa',
+      'Engole opiniões para evitar conflito',
+      'Insegurança ou voz baixa ao falar em público',
+      'Sensação de que ninguém realmente a(o) escuta'
+    ],
+    aligned:[
+      'Me expresso com clareza, verdade e respeito',
+      'Ouço os outros com atenção genuína',
+      'Sinto-me à vontade para falar o que penso'
+    ]
+  },
+  {
+    key:'frontal', name:'Chakra Frontal', sanskrit:'Ajna · Terceiro Olho',
+    theme:'intuição, clareza e visão de futuro', color:'#0FADA6', icon:ICONS.frontal,
+    hyper:[
+      'Excesso de análise, dificuldade em desligar a mente',
+      'Apego rígido a crenças ou ideias fixas',
+      'Dificuldade em confiar no que não pode provar',
+      'Insônia por excesso de pensamentos'
+    ],
+    hypo:[
+      'Dificuldade em confiar na própria intuição',
+      'Falta de clareza sobre os rumos da própria vida',
+      'Sensação de estar no automático, sem visão de futuro',
+      'Dificuldade em imaginar novas possibilidades'
+    ],
+    aligned:[
+      'Confio na minha intuição para tomar decisões',
+      'Tenho clareza sobre os próximos passos da minha vida',
+      'Minha mente está tranquila e presente'
+    ]
+  },
+  {
+    key:'coronario', name:'Chakra Coronário', sanskrit:'Sahasrara · Topo da Cabeça',
+    theme:'espiritualidade, propósito e conexão', color:'#14B8A0', icon:ICONS.coronario,
+    hyper:[
+      'Fuga da realidade através de espiritualidade excessiva',
+      'Sensação de superioridade espiritual sobre os outros',
+      'Dificuldade em lidar com questões práticas do dia a dia',
+      'Idealização excessiva, desconexão do próprio corpo'
+    ],
+    hypo:[
+      'Sensação de vazio existencial ou falta de propósito',
+      'Dificuldade em se conectar com algo maior que si mesmo(a)',
+      'Ceticismo excessivo sobre espiritualidade e propósito',
+      'Sensação de desconexão de si mesmo(a)'
+    ],
+    aligned:[
+      'Sinto conexão com um propósito maior na minha vida',
+      'Vivo minha espiritualidade com equilíbrio e presença',
+      'Sinto gratidão e paz interior com frequência'
+    ]
+  }
+];
+
+const BODY_CY = [178, 160, 140, 104, 68, 36, 18]; // básico → coronário, matches CHAKRAS order
+
+const PRACTICES = [
+  {icon:'<path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/>', title:'Meditação diária', text:'Mesmo 5 minutos ajudam a manter os canais energéticos alinhados.'},
+  {icon:'<path d="M12 20.5S3.5 15 3.5 9a4.5 4.5 0 0 1 8.5-2 4.5 4.5 0 0 1 8.5 2c0 6-8.5 11.5-8.5 11.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>', title:'Perdão e gratidão', text:'Praticar os dois libera bloqueios emocionais acumulados.'},
+  {icon:'<path d="M3 21c4-1 6-5 6-9 0-3-2-6-2-6s5 0 7 4c1.5 3 .5 7-1 9M9 21c3-6 8-9 12-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>', title:'Contato com a natureza', text:'Terra, sol, água e ar ajudam a manter os chakras equilibrados.'}
+];
+
+const STATUS_BLURB = {
+  hiper: 'Isso costuma aparecer como excesso, controle ou intensidade nessa área da sua vida.',
+  hipo: 'Isso costuma aparecer como falta, insegurança ou dificuldade nessa área da sua vida.',
+  bal: 'Isso costuma indicar que essa área está bem regulada para você no momento.'
+};
+
+const HISTORY_KEY = 'pranion_chakra_simples_history_v1';
+const DISMISS_KEY = 'pranion_chakra_simples_install_dismissed_v1';
+
+/* ============================= HELPERS ============================= */
+
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const main = $('#main');
+const modalRoot = $('#modalRoot');
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function uid(){ return Math.random().toString(36).slice(2,10); }
+function fmtDate(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString('pt-BR', {day:'2-digit', month:'short', year:'numeric'});
+}
+function loadHistory(){ try{ return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; }catch(e){ return []; } }
+function saveHistory(list){ try{ localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(-30))); }catch(e){} }
+
+function statusColor(status){ return status==='hiper' ? 'var(--hyper)' : status==='hipo' ? 'var(--hypo)' : 'var(--balanced)'; }
+function statusLabel(status){ return status==='hiper' ? 'Hiperfunção' : status==='hipo' ? 'Hipofunção' : 'Equilibrado'; }
+function statusPillHTML(status){
+  const cls = status==='hiper'?'hiper':status==='hipo'?'hipo':'bal';
+  return '<span class="pill '+cls+'">'+statusLabel(status)+'</span>';
+}
+function itemTagHTML(type){
+  if(type==='hyper') return '<span class="pill hiper">Sinal de excesso</span>';
+  if(type==='hypo') return '<span class="pill hipo">Sinal de carência</span>';
+  return '<span class="pill bal">Ponto forte</span>';
+}
+
+/* ============================= STATE ============================= */
+
+const state = {
+  view:'home',          // home | quiz | results | detail | history
+  stack:[],
+  quizStarted:false,
+  currentChakra:0,
+  shuffled:{},           // idx -> array of {id,text,type}
+  answers:{},            // idx -> Set(ids)
+  results:null,          // array of 7 {hyper,hypo,aligned,status,percent}
+  detailChakra:0,
+  history: loadHistory()
+};
+
+function ensureChakraData(idx){
+  if(!state.shuffled[idx]){
+    const c = CHAKRAS[idx];
+    const items = [
+      ...c.hyper.map(t=>({id:uid(),text:t,type:'hyper'})),
+      ...c.hypo.map(t=>({id:uid(),text:t,type:'hypo'})),
+      ...c.aligned.map(t=>({id:uid(),text:t,type:'aligned'}))
+    ];
+    state.shuffled[idx] = shuffle(items);
+  }
+  if(!state.answers[idx]) state.answers[idx] = new Set();
+}
+
+function computeChakraResult(idx){
+  ensureChakraData(idx);
+  const answers = state.answers[idx];
+  const items = state.shuffled[idx];
+  let hyper=0, hypo=0, aligned=0;
+  items.forEach(it=>{
+    if(answers.has(it.id)){
+      if(it.type==='hyper') hyper++; else if(it.type==='hypo') hypo++; else aligned++;
+    }
+  });
+  const diff = hyper-hypo;
+  let status;
+  if(aligned>=2 && Math.abs(diff)<=1) status='bal';
+  else if(diff>0) status='hiper';
+  else if(diff<0) status='hipo';
+  else status = aligned>=hyper ? 'bal' : (hyper>=hypo ? 'hiper':'hipo');
+  let percent = 100 - (hyper+hypo)*11 + aligned*6;
+  percent = Math.max(8, Math.min(100, Math.round(percent)));
+  return {hyper,hypo,aligned,status,percent};
+}
+
+function goto(view, push){
+  if(push!==false) state.stack.push(state.view);
+  state.view = view;
+  render();
+  main.scrollTop = 0;
+  window.scrollTo(0,0);
+}
+
+/* ============================= BODY MAP ============================= */
+
+function bodyMapSVG(opts){
+  const { activeIdx=null, results=null, clickable=false, size=150 } = opts;
+  let pts = '';
+  for(let i=0;i<7;i++){
+    const cy = BODY_CY[i];
+    const isActive = activeIdx===i;
+    const fill = results ? statusColor(results[i].status) : CHAKRAS[i].color;
+    const ringOpacity = isActive ? 1 : 0;
+    pts += '<g class="bodymap-pt" data-idx="'+i+'" tabindex="'+(clickable?'0':'-1')+'">'
+      + '<circle class="ring" cx="70" cy="'+cy+'" r="11" stroke="'+fill+'" opacity="'+ringOpacity+'"/>'
+      + '<circle cx="70" cy="'+cy+'" r="7" fill="'+fill+'"/>'
+      + '</g>';
+  }
+  return '<svg viewBox="0 0 140 300" width="'+size+'" height="'+(size*2)+'" style="max-height:'+(size*2)+'px">'
+    + '<rect x="49" y="18" width="42" height="42" rx="21" fill="var(--surface-3)"/>'
+    + '<rect x="40" y="60" width="60" height="118" rx="26" fill="var(--surface-3)"/>'
+    + '<rect x="43" y="176" width="20" height="96" rx="10" fill="var(--surface-3)"/>'
+    + '<rect x="77" y="176" width="20" height="96" rx="10" fill="var(--surface-3)"/>'
+    + pts
+    + '</svg>';
+}
+
+function wireBodyMap(container, onPick){
+  const svg = container.querySelector('svg');
+  if(!svg) return;
+  svg.addEventListener('click', e=>{
+    const g = e.target.closest('[data-idx]');
+    if(g && onPick) onPick(parseInt(g.getAttribute('data-idx'),10));
+  });
+}
+
+/* ============================= RENDER: HOME ============================= */
+
+function renderHome(){
+  const chips = CHAKRAS.map(c=>(
+    '<div class="chip"><div class="dot" style="background:'+c.color+'"><svg viewBox="0 0 24 24" fill="none" style="color:#fff">'+c.icon+'</svg></div>'
+    + '<div><b>'+c.name.replace('Chakra ','')+'</b><small>'+c.theme.split(',')[0]+'</small></div></div>'
+  )).join('');
+
+  main.innerHTML =
+    '<div class="view" id="viewHome">'
+    + installBannerHTML()
+    + '<span class="eyebrow">Autoavaliação dos 7 chakras</span>'
+    + '<h1 class="h1">Descubra qual área da sua vida precisa de atenção hoje</h1>'
+    + '<p class="lede">Responda perguntas simples sobre cada um dos 7 chakras e receba, em minutos, sua pontuação por chakra com uma explicação curta de cada resultado — e acompanhe sua evolução ao longo do tempo.</p>'
+    + '<div class="chip-grid">'+chips+'</div>'
+    + '<button class="btn btn-primary" id="btnStart">Iniciar minha avaliação</button>'
+    + practicesCardHTML()
+    + creditFooterHTML()
+    + '</div>';
+
+  $('#btnStart').addEventListener('click', startOrResumeQuiz);
+  wireInstallBanner();
+}
+
+function practicesCardHTML(){
+  const items = PRACTICES.map(p=>(
+    '<div class="practice"><svg class="picon" viewBox="0 0 24 24" fill="none" style="color:var(--accent)">'+p.icon+'</svg>'
+    + '<b>'+p.title+'</b><span>'+p.text+'</span></div>'
+  )).join('');
+  return '<div class="card"><b style="font-size:13.5px;display:block;margin-bottom:12px;">Para manter seus chakras alinhados</b><div class="practices">'+items+'</div></div>';
+}
+
+function creditFooterHTML(){
+  return '<footer class="credit"><span>um app Pranion · desenvolvido por</span><img src="assets/pocket-logo.webp" alt="Pocket App Studio"></footer>';
+}
+
+/* ============================= RENDER: QUIZ ============================= */
+
+function renderQuiz(){
+  ensureChakraData(state.currentChakra);
+  const idx = state.currentChakra;
+  const c = CHAKRAS[idx];
+  const items = state.shuffled[idx];
+  const answered = state.answers[idx];
+
+  const rows = items.map(it=>(
+    '<div class="qitem'+(answered.has(it.id)?' checked':'')+'" data-id="'+it.id+'">'
+    + '<div class="box">'+CHECK_ICON+'</div><span>'+it.text+'</span></div>'
+  )).join('');
+
+  main.innerHTML =
+    '<div class="view" id="viewQuiz">'
+    + '<div style="display:flex;align-items:center;gap:12px">'
+    + '<button class="iconbtn" id="quizBack" aria-label="Voltar ao chakra anterior"><svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M15 5 8 12l7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>'
+    + '<div style="flex:1">'
+    + '<div class="steplabel"><span>Chakra '+(idx+1)+' de 7</span><span>'+Math.round(((idx)/7)*100)+'% concluído</span></div>'
+    + '<div class="progressline" style="margin-top:6px"><i style="width:'+Math.round((idx/7)*100)+'%"></i></div>'
+    + '</div></div>'
+    + '<div class="bodywrap">'+bodyMapSVG({activeIdx:idx, size:56})+'</div>'
+    + '<div style="text-align:center">'
+    + '<span class="eyebrow" style="background:'+c.color+'22;color:'+c.color+'">'+c.sanskrit+'</span>'
+    + '<h2 class="display" style="font-size:22px;margin:10px 0 2px">'+c.name+'</h2>'
+    + '<p class="lede" style="margin:0 0 4px;text-transform:capitalize">'+c.theme+'</p>'
+    + '</div>'
+    + '<p style="font-size:12.5px;color:var(--text-dim);text-align:center;margin:0">Marque tudo o que você tem sentido com frequência nos últimos dias</p>'
+    + '<div class="qlist">'+rows+'</div>'
+    + '<button class="btn btn-primary" id="btnNext">'+(idx===6?'Ver meu resultado':'Próximo chakra')+'</button>'
+    + '</div>';
+
+  $$('.qitem').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const id = el.getAttribute('data-id');
+      if(answered.has(id)) answered.delete(id); else answered.add(id);
+      el.classList.toggle('checked');
+    });
+  });
+  $('#btnNext').addEventListener('click', ()=>{
+    if(idx<6){ state.currentChakra++; ensureChakraData(state.currentChakra); goto('quiz', false); }
+    else finishQuiz();
+  });
+  $('#quizBack').addEventListener('click', ()=>{
+    if(idx>0){ state.currentChakra--; goto('quiz', false); }
+    else goto('home', false);
+  });
+}
+
+function finishQuiz(){
+  const results = CHAKRAS.map((_,i)=>computeChakraResult(i));
+  state.results = results;
+  const overall = Math.round(results.reduce((s,r)=>s+r.percent,0)/7);
+  const session = { date:new Date().toISOString(), overall, perChakra: results.map(r=>({percent:r.percent,status:r.status})) };
+  state.history.push(session);
+  saveHistory(state.history);
+  goto('results');
+}
+
+/* ============================= RENDER: RESULTS ============================= */
+
+function renderResults(){
+  if(!state.results){
+    main.innerHTML = '<div class="view" id="viewResults">'
+      + '<span class="eyebrow">Resultado</span>'
+      + '<div class="empty"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.1" fill="currentColor"/></svg>'
+      + '<p>Você ainda não concluiu uma avaliação.<br>Faça o mapeamento para ver seu resultado aqui.</p></div>'
+      + '<button class="btn btn-primary" id="btnGoAssess">Iniciar avaliação</button>'
+      + '</div>';
+    $('#btnGoAssess').addEventListener('click', startOrResumeQuiz);
+    return;
+  }
+  const results = state.results;
+  const overall = Math.round(results.reduce((s,r)=>s+r.percent,0)/7);
+  let worst=0, best=0;
+  results.forEach((r,i)=>{ if(r.percent<results[worst].percent) worst=i; if(r.percent>results[best].percent) best=i; });
+
+  const rows = CHAKRAS.map((c,i)=>{
+    const r = results[i];
+    return '<div class="crow" data-idx="'+i+'">'
+      + '<div class="dot" style="background:'+c.color+'"><svg viewBox="0 0 24 24" fill="none" style="color:#fff">'+c.icon+'</svg></div>'
+      + '<div class="meta"><b>'+c.name+'</b><small>'+statusLabel(r.status)+' · '+r.percent+'%</small>'
+      + '<div class="bar-mini"><i style="width:'+r.percent+'%;background:'+statusColor(r.status)+'"></i></div></div>'
+      + '<span class="chev">'+CHEV_ICON+'</span></div>';
+  }).join('');
+
+  main.innerHTML =
+    '<div class="view" id="viewResults">'
+    + '<div style="text-align:center"><span class="eyebrow">Seu resultado</span></div>'
+    + '<div class="harmony-big"><div class="n num">'+overall+'%</div><div class="lbl">Nível de harmonia geral</div></div>'
+    + '<div class="flagrow">'
+    + '<div class="flag"><span>Maior desafio</span><b style="color:'+statusColor(results[worst].status)+'">'+CHAKRAS[worst].name.replace('Chakra ','')+'</b></div>'
+    + '<div class="flag"><span>Canal mais fluido</span><b style="color:'+statusColor(results[best].status)+'">'+CHAKRAS[best].name.replace('Chakra ','')+'</b></div>'
+    + '</div>'
+    + '<div class="bodywrap">'+bodyMapSVG({results, clickable:true, size:76})+'</div>'
+    + '<div class="clist">'+rows+'</div>'
+    + '<button class="btn btn-line" id="btnRedo">Refazer avaliação</button>'
+    + practicesCardHTML()
+    + creditFooterHTML()
+    + '</div>';
+
+  $$('.crow').forEach(el=> el.addEventListener('click', ()=>{ state.detailChakra = parseInt(el.getAttribute('data-idx'),10); goto('detail'); }));
+  wireBodyMap($('.bodywrap'), i=>{ state.detailChakra=i; goto('detail'); });
+  $('#btnRedo').addEventListener('click', resetQuiz);
+}
+
+/* ============================= RENDER: DETAIL ============================= */
+
+function renderDetail(){
+  const idx = state.detailChakra;
+  const c = CHAKRAS[idx];
+  const r = state.results ? state.results[idx] : computeChakraResult(idx);
+
+  const markedItems = (state.shuffled[idx]||[]).filter(it => state.answers[idx] && state.answers[idx].has(it.id));
+  const signalsHTML = markedItems.length
+    ? markedItems.map(it=>(
+        '<div class="crow" style="cursor:default">'+itemTagHTML(it.type)
+        + '<div class="meta"><b style="font-size:13px;font-weight:600">'+it.text+'</b></div></div>'
+      )).join('')
+    : '<p style="margin:0;color:var(--text-dim);font-size:13px">Você não marcou nenhum sinal específico para este chakra.</p>';
+
+  main.innerHTML =
+    '<div class="view" id="viewDetail">'
+    + '<div class="detail-head">'
+    + '<button class="iconbtn" id="detailBack" aria-label="Voltar ao resultado"><svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M15 5 8 12l7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>'
+    + '<div class="dot" style="background:'+c.color+'"><svg viewBox="0 0 24 24" fill="none" style="color:#fff">'+c.icon+'</svg></div>'
+    + '<div><h2>'+c.name+'</h2><div class="sk">'+c.sanskrit+'</div></div><div style="flex:1"></div>'+statusPillHTML(r.status)+'</div>'
+
+    + '<div class="harmony-big" style="padding:var(--sp-2) 0 0"><div class="n num" style="font-size:40px">'+r.percent+'%</div><div class="lbl">Pontuação deste chakra</div></div>'
+
+    + '<div class="card soft"><b style="font-size:13.5px;display:block;margin-bottom:8px">O que isso significa</b>'
+    + '<p style="margin:0">Seu <b>'+c.name+'</b> — ligado a <b>'+c.theme+'</b> — aparece hoje como <b>'+statusLabel(r.status).toLowerCase()+'</b>. '+STATUS_BLURB[r.status]+'</p></div>'
+
+    + '<div class="card"><b style="font-size:13.5px;display:block;margin-bottom:10px">Sinais que você indicou</b>'
+    + '<div class="clist">'+signalsHTML+'</div></div>'
+
+    + '<div class="notecard"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 2 7l10 5 10-5-10-5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>'
+    + '<p><b>Importante:</b> este resultado é um mapa simbólico para autoconhecimento, não um diagnóstico médico ou psicológico.</p></div>'
+    + '</div>';
+
+  $('#detailBack').addEventListener('click', ()=> goto('results', false));
+}
+
+/* ============================= RENDER: HISTORY ============================= */
+
+function renderHistory(){
+  const list = state.history.slice().reverse();
+  let body;
+  if(list.length===0){
+    body = '<div class="empty"><svg viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 1 0 3-6.7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M3 4v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      + '<p>Você ainda não tem avaliações salvas.<br>Faça seu primeiro mapeamento para acompanhar sua evolução aqui.</p></div>';
+  } else {
+    const spark = sparklineSVG(state.history.map(s=>s.overall));
+    const rows = list.map(s=>(
+      '<div class="histrow"><div><b>'+fmtDate(s.date)+'</b><span>Harmonia geral</span></div><div class="pct num" style="color:var(--accent)">'+s.overall+'%</div></div>'
+    )).join('');
+    body = '<div class="card soft"><b style="font-size:13px;display:block;margin-bottom:8px">Sua evolução</b>'+spark+'</div>'
+      + '<div class="clist">'+rows+'</div>';
+  }
+  main.innerHTML = '<div class="view" id="viewHistory"><span class="eyebrow">Histórico</span><h2 class="h1" style="font-size:22px">Sua evolução</h2>'+body+'</div>';
+}
+
+function sparklineSVG(values){
+  if(values.length<2){
+    return '<div style="display:flex;align-items:baseline;gap:8px"><span class="display" style="font-size:34px">'+values[0]+'%</span><span style="font-size:12px;color:var(--text-dim)">primeira avaliação registrada</span></div>';
+  }
+  const w=380,h=90,pad=8;
+  const max=100,min=0;
+  const pts = values.map((v,i)=>{
+    const x = pad + (i/(values.length-1))*(w-pad*2);
+    const y = pad + (1-(v-min)/(max-min))*(h-pad*2);
+    return x+','+y;
+  });
+  const line = pts.join(' ');
+  const last = pts[pts.length-1].split(',');
+  return '<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:'+h+'px">'
+    + '<polyline points="'+line+'" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'
+    + '<circle cx="'+last[0]+'" cy="'+last[1]+'" r="4" fill="var(--accent)"/>'
+    + '</svg>';
+}
+
+/* ============================= NAV / RESET ============================= */
+
+function resetQuiz(){
+  state.currentChakra=0; state.shuffled={}; state.answers={}; state.results=null; state.quizStarted=false; state.stack=[];
+  goto('home', false);
+}
+
+function startOrResumeQuiz(){
+  if(state.view==='quiz') return;
+  if(state.results){
+    state.currentChakra=0; state.shuffled={}; state.answers={}; state.results=null;
+  }
+  state.quizStarted = true;
+  ensureChakraData(state.currentChakra);
+  goto('quiz', false);
+}
+
+function render(){
+  if(state.view==='home') renderHome();
+  else if(state.view==='quiz') renderQuiz();
+  else if(state.view==='results') renderResults();
+  else if(state.view==='detail') renderDetail();
+  else if(state.view==='history') renderHistory();
+  updateTabBar();
+}
+
+const TAB_FOR_VIEW = { home:'home', quiz:'assessment', results:'results', detail:'results', history:'history' };
+function updateTabBar(){
+  const active = TAB_FOR_VIEW[state.view] || 'home';
+  $$('.tabbtn').forEach(b=> b.classList.toggle('active', b.getAttribute('data-tab')===active));
+}
+
+$('#tabbar').addEventListener('click', e=>{
+  const b = e.target.closest('.tabbtn'); if(!b) return;
+  const tab = b.getAttribute('data-tab');
+  if(tab==='home') goto('home', false);
+  else if(tab==='assessment') startOrResumeQuiz();
+  else if(tab==='results') goto('results', false);
+  else if(tab==='history') goto('history', false);
+});
+
+$('#btnRestartTop').addEventListener('click', ()=>{
+  if(state.view==='quiz'){
+    openConfirm('Reiniciar avaliação?', 'Suas respostas desta avaliação em andamento serão apagadas. Avaliações já concluídas continuam salvas no seu histórico.', 'Reiniciar', resetQuiz);
+  } else {
+    resetQuiz();
+  }
+});
+
+/* ============================= MODAL / CONFIRM ============================= */
+
+function openConfirm(title, msg, label, onYes){
+  modalRoot.innerHTML =
+    '<div class="modal-back" id="confBack"><div class="modal">'
+    + '<h3>'+title+'</h3><p style="margin:0;color:var(--text-dim);font-size:13.5px">'+msg+'</p>'
+    + '<button class="btn btn-primary" id="confYes">'+label+'</button>'
+    + '<button class="btn btn-ghost" id="confNo">Cancelar</button>'
+    + '</div></div>';
+  $('#confBack').addEventListener('click', e=>{ if(e.target.id==='confBack') closeModal(); });
+  $('#confNo').addEventListener('click', closeModal);
+  $('#confYes').addEventListener('click', ()=>{ closeModal(); onYes(); });
+}
+function closeModal(){ modalRoot.innerHTML=''; }
+
+/* ============================= PWA INSTALL ============================= */
+
+let deferredPrompt=null;
+const isIOS = /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
+
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault(); deferredPrompt=e;
+  const bar=$('#installBar'); if(bar) bar.hidden=false;
+});
+
+function installDismissed(){ try{ return localStorage.getItem(DISMISS_KEY)==='1'; }catch(e){ return false; } }
+function dismissInstall(){ try{ localStorage.setItem(DISMISS_KEY,'1'); }catch(e){} const bar=$('#installBar'); if(bar) bar.hidden=true; }
+
+function installBannerHTML(){
+  if(isStandalone || installDismissed()) return '';
+  return '<div class="installbar" id="installBar" '+(deferredPrompt||isIOS?'':'hidden')+'>'
+    + '<svg viewBox="0 0 24 24" fill="none"><path d="M12 3v13m0 0 4-4m-4 4-4-4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>'
+    + '<p>Instale o Raio-X dos Chakras Lite na tela inicial do seu celular</p>'
+    + '<button id="btnInstallGo">Instalar</button>'
+    + '<button class="x" id="btnInstallX">✕</button>'
+    + '</div>';
+}
+function wireInstallBanner(){
+  const go=$('#btnInstallGo'); if(go) go.addEventListener('click', doInstall);
+  const x=$('#btnInstallX'); if(x) x.addEventListener('click', dismissInstall);
+}
+async function doInstall(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt=null;
+    dismissInstall();
+  } else {
+    openInstallInstructions();
+  }
+}
+function openInstallInstructions(){
+  const steps = isIOS
+    ? [ ['<path d="M12 3v13m0 0 4-4m-4 4-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="14" width="16" height="6" rx="2" stroke="currentColor" stroke-width="2"/>', 'Toque no ícone de <b>Compartilhar</b> na barra do Safari'],
+        ['<path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>', 'Escolha <b>Adicionar à Tela de Início</b>'],
+        ['<path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>', 'Toque em <b>Adicionar</b> — pronto, o app fica no seu celular'] ]
+    : [ ['<path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>', 'Abra o menu do navegador (⋮) no canto da tela'],
+        ['<path d="M12 3v13m0 0 4-4m-4 4-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>', 'Toque em <b>Instalar aplicativo</b> ou <b>Adicionar à tela inicial</b>'],
+        ['<path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>', 'Confirme — o app aparece como um app de verdade'] ];
+  modalRoot.innerHTML = '<div class="modal-back" id="instBack"><div class="modal">'
+    + '<h3>Instalar o Raio-X dos Chakras Lite</h3>'
+    + steps.map(s=>'<div class="step"><svg viewBox="0 0 24 24" fill="none">'+s[0]+'</svg><span>'+s[1]+'</span></div>').join('')
+    + '<button class="btn btn-primary" id="instOk">Entendi</button>'
+    + '</div></div>';
+  $('#instBack').addEventListener('click', e=>{ if(e.target.id==='instBack') closeModal(); });
+  $('#instOk').addEventListener('click', closeModal);
+}
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+}
+
+/* ============================= HOT RELOAD HOOK ============================= */
+
+function boot(){
+  render();
+}
+if(window.claude && window.claude.hot){
+  window.claude.hot.ready ? window.claude.hot.ready(boot) : boot();
+} else {
+  boot();
+}
+
+})();
+</script>
+</body>
+</html>
